@@ -1,20 +1,27 @@
+# import dependencies and packages
 import threading
 import socket
 
+# declares the port and ip address for the server (5 lines of code)
 host = '127.0.0.1' # localhost
 port = 12700
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((host, port))
+# server infinitely listens for a new connection
 server.listen()
 
+# creates a variable list of connected usernames in the chatroom server
 clients = []
 nicknames = []
 
+# broadcasts a message from a user for all connected users to see in the chatroom
 def broadcast(message):
     for client in clients:
         client.send(message)
 
+# the handler for the client
+# removes a client from the server if the connection becomes severed
 def handle(client):
     while True:
         try:
@@ -29,11 +36,13 @@ def handle(client):
             nicknames.remove(nickname)
             break
 
+# handler for the client
+# adds a client
 def receive():
     while True:
         client, address = server.accept()
         print(f"Connected with {str(address)}")
-
+        
         client.send('NICK'.encode('ascii'))
         nickname = client.recv(1024).decode('ascii')
         nicknames.append(nickname)
